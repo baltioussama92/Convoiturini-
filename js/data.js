@@ -1,0 +1,17 @@
+window.covoituriniCities = {
+  tunis: { lat: 36.806496, lng: 10.181532 },
+  ariana: { lat: 36.866536, lng: 10.164724 },
+  manouba: { lat: 36.808056, lng: 10.097222 },
+  'ben arous': { lat: 36.753056, lng: 10.228611 },
+  nabeul: { lat: 36.451289, lng: 10.735660 },
+  hammamet: { lat: 36.4, lng: 10.61667 },
+  bizerte: { lat: 37.27442, lng: 9.87391 },
+  sousse: { lat: 35.82539, lng: 10.63699 },
+  monastir: { lat: 35.77799, lng: 10.82617 },
+  mahdia: { lat: 35.50472, lng: 11.06222 },
+  kairouan: { lat: 35.6781, lng: 10.09633 },
+  sfax: { lat: 34.74056, lng: 10.76028 },
+  gabès: { lat: 33.88146, lng: 10.0982 },
+  medenine: { lat: 33.35495, lng: 10.50548 },
+  tataouine: { lat: 32.92967, lng: 10.45177 },
+};
