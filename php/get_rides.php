@@ -32,4 +32,15 @@ foreach ($params as $key => $value) {
 $statement->bindValue(':limit', $limit, PDO::PARAM_INT);
 $statement->bindValue(':offset', $offset, PDO::PARAM_INT);
 $statement->execute();
-respond(['ok' => true, 'rides' => $statement->fetchAll()]);
+$rides = $statement->fetchAll();
+
+$pointStatement = $pdo->prepare(
+    'SELECT point_order, lat, lng FROM ride_points
+     WHERE ride_id = :ride_id ORDER BY point_order'
+);
+foreach ($rides as &$ride) {
+    $pointStatement->execute(['ride_id' => $ride['id']]);
+    $ride['route_points'] = $pointStatement->fetchAll();
+}
+unset($ride);
+respond(['ok' => true, 'rides' => $rides]);

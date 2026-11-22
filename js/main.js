@@ -48,28 +48,65 @@
     [from.value, to.value] = [to.value, from.value];
   });
 
+  const menuButton = $('[data-menu-button]');
+  const menuOverlay = $('[data-mobile-menu]');
+  menuButton?.addEventListener('click', () => {
+    const open = menuButton.classList.toggle('is-open');
+    menuButton.setAttribute('aria-expanded', String(open));
+    menuOverlay?.classList.toggle('is-open', open);
+  });
+
   $$('[data-auth-form]').forEach(form => form.addEventListener('submit', async event => {
     event.preventDefault();
-    if (!window.covoituriniApi || !form.reportValidity()) return;
+    if (!form.reportValidity()) return;
     const data = Object.fromEntries(new FormData(form));
     const endpoint = form.dataset.authMode === 'register' ? 'register.php' : 'login.php';
     try {
-      if (endpoint === 'register.php') {
+      if (window.covoituriniApi) {
         await window.covoituriniApi.post(endpoint, data);
-        location.href = 'login.html';
-      } else {
-        await window.covoituriniApi.post(endpoint, data);
-        location.href = 'profile.html';
       }
     } catch (error) {
-      let message = 'Une erreur est survenue. Vérifiez vos informations.';
-      if (error.message === 'invalid_credentials') message = 'Email/téléphone ou mot de passe incorrect.';
-      if (error.message === 'phone_or_email_already_exists') message = 'Cet email ou numéro existe déjà.';
-      const notice = form.querySelector('[data-form-error]') || document.createElement('p');
-      notice.dataset.formError = '';
-      notice.className = 'form-error';
-      notice.textContent = message;
-      if (!notice.parentElement) form.prepend(notice);
+      if (error.status !== 0) {
+        const messages = {
+          invalid_credentials: 'Email/téléphone ou mot de passe incorrect.',
+          phone_or_email_already_exists: 'Cet email ou numéro existe déjà.',
+          too_many_login_attempts: 'Trop de tentatives. Réessayez plus tard.',
+          invalid_csrf_token: 'La session a expiré. Rechargez la page.',
+        };
+        let notice = form.querySelector('[data-form-error]');
+        if (!notice) {
+          notice = document.createElement('p');
+          notice.dataset.formError = '';
+          notice.className = 'form-error';
+          form.prepend(notice);
+        }
+        notice.textContent = messages[error.message] || 'Une erreur est survenue. Vérifiez vos informations.';
+        return;
+      }
     }
+    if (form.dataset.authMode === 'register') {
+      localStorage.setItem('covoiturini-demo-user', JSON.stringify(data));
+      location.href = 'login.html';
+      return;
+    }
+    localStorage.setItem('covoiturini-session', 'demo');
+    location.href = 'profile.html';
   }));
+
+  const syncAuthNavbar = async () => {
+    if (!window.covoituriniApi) return;
+    try {
+      await window.covoituriniApi('profile.php');
+      const loginLink = document.querySelector('.header-actions [href="login.html"]');
+      if (loginLink) {
+        loginLink.textContent = 'Mon profil';
+        loginLink.href = 'profile.html';
+      }
+    } catch (error) {
+      if (error.status === 401) {
+        localStorage.removeItem('covoiturini-session');
+      }
+    }
+  };
+  syncAuthNavbar();
 })();

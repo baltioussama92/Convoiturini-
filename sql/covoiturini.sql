@@ -65,10 +65,14 @@ CREATE TABLE rides (
   CONSTRAINT fk_rides_user FOREIGN KEY (user_id) REFERENCES users (id)
     ON UPDATE CASCADE ON DELETE RESTRICT,
   CONSTRAINT chk_rides_seats_total CHECK (seats_total BETWEEN 1 AND 8),
-  CONSTRAINT chk_rides_seats_left CHECK (seats_left <= seats_total),
+  CONSTRAINT chk_rides_seats_left CHECK (seats_left >= 0 AND seats_left <= seats_total),
   CONSTRAINT chk_rides_price CHECK (price >= 0),
+  CONSTRAINT chk_rides_start_coordinates CHECK (start_lat BETWEEN 29.8 AND 37.7 AND start_lng BETWEEN 7.3 AND 11.8),
+  CONSTRAINT chk_rides_end_coordinates CHECK (end_lat BETWEEN 29.8 AND 37.7 AND end_lng BETWEEN 7.3 AND 11.8),
   KEY idx_rides_date_status (ride_date, status),
   KEY idx_rides_route (start_name, end_name),
+  KEY idx_rides_start_coordinates (start_lat, start_lng),
+  KEY idx_rides_end_coordinates (end_lat, end_lng),
   KEY idx_rides_user_status (user_id, status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -81,6 +85,8 @@ CREATE TABLE ride_points (
   PRIMARY KEY (id),
   CONSTRAINT fk_ride_points_ride FOREIGN KEY (ride_id) REFERENCES rides (id)
     ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT chk_ride_point_order CHECK (point_order >= 1),
+  CONSTRAINT chk_ride_point_coordinates CHECK (lat BETWEEN 29.8 AND 37.7 AND lng BETWEEN 7.3 AND 11.8),
   UNIQUE KEY uq_ride_points_order (ride_id, point_order),
   KEY idx_ride_points_route_order (ride_id, point_order),
   KEY idx_ride_points_coordinates (lat, lng)

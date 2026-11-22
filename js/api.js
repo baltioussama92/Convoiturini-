@@ -1,10 +1,17 @@
 (() => {
   const api = async (endpoint, options = {}) => {
-    const response = await fetch(`php/${endpoint}`, {
-      credentials: 'same-origin',
-      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
-      ...options,
-    });
+    let response;
+    try {
+      response = await fetch(`php/${endpoint}`, {
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+        ...options,
+      });
+    } catch (networkError) {
+      const error = new Error('network_error');
+      error.status = 0;
+      throw error;
+    }
     const payload = await response.json().catch(() => ({ ok: false, error: 'invalid_server_response' }));
     if (!response.ok || payload.ok === false) {
       const error = new Error(payload.error || 'request_failed');

@@ -27,7 +27,16 @@ function input_data(): array
 function respond(array $payload, int $status = 200): void
 {
     http_response_code($status);
-    echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    $escape = function ($value) use (&$escape) {
+        if (is_string($value)) {
+            return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        }
+        if (is_array($value)) {
+            return array_map($escape, $value);
+        }
+        return $value;
+    };
+    echo json_encode($escape($payload), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
 }
 
@@ -122,7 +131,7 @@ function route_points(array $value): array
 
         $lat = (float)$point['lat'];
         $lng = (float)$point['lng'];
-        if ($lat < 30 || $lat > 38 || $lng < 7 || $lng > 12) {
+        if ($lat < 29.8 || $lat > 37.7 || $lng < 7.3 || $lng > 11.8) {
             respond(['ok' => false, 'error' => 'route_point_outside_tunisia'], 422);
         }
         $points[] = ['order' => $index + 1, 'lat' => $lat, 'lng' => $lng];

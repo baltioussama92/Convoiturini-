@@ -36,7 +36,17 @@ The SQL seed creates demo users. Their password is:
 5. Search for a route such as `Manouba` to `Ariana`.
 6. Open a result to view its live ride details.
 7. Toggle light/dark mode and FR/AR/EN language modes.
-8. Delete a ride through the authenticated API when implementing the profile delete control.
+8. Delete a ride from your profile with the confirmation dialog.
+9. Verify dark mode, RTL Arabic mode, and mobile navigation.
+
+## Deployment guide
+
+1. Export `sql/covoiturini.sql` or upload it through your hosting phpMyAdmin.
+2. Upload the complete project folder via FTP/SFTP to the PHP web root.
+3. Create the database and a restricted database account; do not use `root` on public hosting.
+4. Set the four `COVOITURINI_DB_*` environment variables if your PHP host supports them. Otherwise update `php/db.php` only for your deployment credentials.
+5. Enable HTTPS and force redirects to HTTPS.
+6. Public Leaflet, Nominatim, and OSRM services are suitable for demos and light use. Respect their usage policies.
 
 ## API endpoints
 

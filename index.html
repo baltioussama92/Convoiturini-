@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body data-page="home">
   <div class="preloader" aria-label="Chargement"><span class="preloader__car">🚙</span><span class="preloader__line"></span></div>
@@ -28,6 +29,9 @@
       <button class="menu-button" data-menu-button aria-label="Ouvrir le menu"><i></i><i></i></button>
     </div>
   </header>
+  <div class="mobile-menu" data-mobile-menu>
+    <a href="index.html">Accueil</a><a href="search.html">Trouver un trajet</a><a href="publish.html">Publier</a><a href="#how">Comment ça marche</a>
+  </div>
 
   <main>
     <section class="hero section">
@@ -58,6 +62,7 @@
     <section class="section section--light" id="how">
       <div class="section-heading reveal"><div><p class="eyebrow">Simple comme bonjour</p><h2 data-i18n="how.title">Votre trajet,<br><em>en trois mouvements.</em></h2></div><p data-i18n="how.text">Moins de dépenses, moins de voitures, plus de rencontres. Covoiturini rend le partage naturel.</p></div>
       <div class="steps">
+        <svg class="steps__line" viewBox="0 0 900 80" aria-hidden="true"><path d="M30 45 C230 45,260 20,450 45 S720 70,870 35"/></svg>
         <article class="step reveal"><span class="step__number">01</span><div class="step__icon">⌕</div><h3 data-i18n="how.one.title">Trouvez votre trajet</h3><p data-i18n="how.one.text">Indiquez où vous allez. Notre communauté a peut-être déjà une place pour vous.</p></article>
         <article class="step reveal reveal--delay"><span class="step__number">02</span><div class="step__icon">♧</div><h3 data-i18n="how.two.title">Faites connaissance</h3><p data-i18n="how.two.text">Consultez les profils, les avis et choisissez la personne qui vous ressemble.</p></article>
         <article class="step reveal reveal--delay-2"><span class="step__number">03</span><div class="step__icon">↗</div><h3 data-i18n="how.three.title">Partagez la route</h3><p data-i18n="how.three.text">Réservez votre place et profitez d'un trajet plus humain et plus léger.</p></article>
@@ -77,9 +82,11 @@
       <div class="stat reveal"><strong data-counter="24500">0</strong><span>trajets publiés</span></div><div class="stat reveal reveal--delay"><strong data-counter="24">0</strong><span>gouvernorats couverts</span></div><div class="stat reveal reveal--delay-2"><strong data-counter="71800">0</strong><span>sièges partagés</span></div>
     </section>
 
+    <section class="section testimonials-section"><div class="section-heading section-heading--compact reveal"><div><p class="eyebrow">Ils ont partagé la route</p><h2>Des trajets,<br><em>des rencontres.</em></h2></div></div><div class="testimonial-slider reveal" data-testimonial-slider><button class="slider-button slider-button--prev" data-testimonial-prev aria-label="Témoignage précédent">←</button><article class="testimonial is-active"><div class="testimonial__stars">★★★★★</div><blockquote>« Je vais chaque jour de Manouba à Tunis. J'ai trouvé des voisins de route en moins de dix minutes. »</blockquote><footer><span class="avatar">A</span><strong>Amel Ben Salah<small>Manouba → Tunis</small></strong></footer></article><article class="testimonial"><div class="testimonial__stars">★★★★★</div><blockquote>« Une très belle façon de rendre le trajet vers Sousse plus simple, humain et économique. »</blockquote><footer><span class="avatar">Y</span><strong>Youssef Trabelsi<small>Tunis → Sousse</small></strong></footer></article><article class="testimonial"><div class="testimonial__stars">★★★★★</div><blockquote>« Clair, rassurant et vraiment adapté aux trajets du quotidien en Tunisie. »</blockquote><footer><span class="avatar">S</span><strong>Sana Gharbi<small>Ariana → Nabeul</small></strong></footer></article><button class="slider-button slider-button--next" data-testimonial-next aria-label="Témoignage suivant">→</button></div></section>
+
     <section class="section faq-section"><div class="section-heading section-heading--compact reveal"><div><p class="eyebrow">Questions fréquentes</p><h2>On vous <em>éclaire.</em></h2></div></div><div class="faq reveal"><details open><summary>Est-ce que Covoiturini est gratuit ? <span>+</span></summary><p>La recherche et la publication sont gratuites. Le prix affiché est une participation aux frais décidée par le conducteur.</p></details><details><summary>Comment choisir un conducteur ? <span>+</span></summary><p>Chaque profil présente ses informations et ses évaluations. Vous gardez toujours le choix de confirmer ou non.</p></details><details><summary>Mes données sont-elles protégées ? <span>+</span></summary><p>Votre numéro reste masqué jusqu'à ce que vous décidiez de le partager avec l'autre membre.</p></details></div></section>
   </main>
   <footer class="footer"><div class="footer__brand"><a class="brand" href="index.html"><span class="brand__mark">C</span><span>Covoiturini</span></a><p>La route nous rapproche.</p></div><div><h4>Découvrir</h4><a href="search.html">Trouver un trajet</a><a href="publish.html">Publier un trajet</a></div><div><h4>La communauté</h4><a href="profile.html">Mon profil</a><a href="#">Sécurité</a></div><div><h4>Suivez-nous</h4><div class="socials"><a href="#">ig</a><a href="#">in</a><a href="#">fb</a></div></div><small>© 2025 Covoiturini · Fait avec soin en Tunisie</small></footer>
-  <script src="js/i18n.js"></script><script src="js/api.js"></script><script src="js/main.js"></script>
+  <script src="js/i18n.js"></script><script src="js/animations.js"></script><script src="js/api.js"></script><script src="js/main.js"></script>
 </body>
 </html>
