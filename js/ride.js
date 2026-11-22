@@ -6,22 +6,9 @@
   const setAll = (selector, value) => document.querySelectorAll(selector).forEach(element => { element.textContent = value; });
   const load = async () => {
     try {
-      let ride;
-      if (window.covoituriniApi) {
-        try { ({ ride } = await window.covoituriniApi(`get_ride.php?id=${encodeURIComponent(id)}`)); } catch {}
-      }
-      if (!ride) {
-        ride = (window.mockRides || []).find(item => String(item.id) === String(id));
-        if (ride) {
-          const start = window.covoituriniCities?.[ride.start_name.toLowerCase()];
-          const end = window.covoituriniCities?.[ride.end_name.toLowerCase()];
-          ride.route_points = start && end
-            ? [{ lat: start.lat, lng: start.lng }, { lat: (start.lat + end.lat) / 2, lng: (start.lng + end.lng) / 2 }, { lat: end.lat, lng: end.lng }]
-            : [];
-          ride.duration_min = 45;
-        }
-      }
-      if (!ride) throw new Error('Ride not found');
+      const response = await window.covoituriniApi(`get_ride.php?id=${encodeURIComponent(id)}`);
+      if (!response.ok) throw new Error(response.error);
+      const { ride } = response.data;
       setAll('[data-ride-start]', ride.start_name);
       setAll('[data-ride-end]', ride.end_name);
       document.querySelector('[data-ride-schedule]').textContent = `${ride.ride_date} · ${ride.ride_time.slice(0, 5)}`;

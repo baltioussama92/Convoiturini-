@@ -1,1 +1,36 @@
-<!doctype html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Inscription — Covoiturini</title><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/animations.css"></head><body data-page="auth"><main class="auth-page"><a class="brand auth-brand" href="index.html"><span class="brand__mark">C</span><span>Covoiturini</span></a><div class="auth-card glass"><p class="eyebrow">Bienvenue à bord</p><h1>Faisons un bout de <em>chemin.</em></h1><p class="muted">Créez votre profil en moins d'une minute.</p><form data-auth-form data-auth-mode="register"><label>Votre prénom<input required name="name" placeholder="Amel"></label><label>Email<input required name="email" type="email" placeholder="vous@exemple.tn"></label><label>Téléphone<input required name="phone" placeholder="+216 12 345 678"></label><label>Genre<select required name="gender"><option value="female">Femme</option><option value="male">Homme</option></select></label><label>Mot de passe<input required name="password" type="password" placeholder="8 caractères minimum"></label><button class="button button--primary button--full">Créer mon compte <span>↗</span></button></form><p class="auth-switch">Déjà membre ? <a href="login.html">Se connecter</a></p></div><div class="auth-art"><div class="auth-art__circle"></div><span>👋</span><p>Bienvenue dans<br><em>la communauté.</em></p></div></main><script src="js/api.js"></script><script src="js/auth.js"></script><script src="js/main.js"></script></body></html>
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#102d32"><title>Inscription — Covoiturini</title>
+  <link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/animations.css"><link rel="stylesheet" href="css/responsive.css">
+</head>
+<body data-page="auth">
+  <a class="skip-link" href="#main-content">Aller au contenu</a>
+  <main class="auth-page" id="main-content">
+    <a class="brand auth-brand" href="index.html" aria-label="Covoiturini - accueil"><span class="brand__mark" aria-hidden="true">C</span><span>Covoiturini</span></a>
+    <div class="auth-card glass">
+      <p class="eyebrow">Bienvenue à bord</p><h1>Faisons un bout de <em>chemin.</em></h1>
+      <p class="muted">Créez votre profil en moins d'une minute.</p>
+      <form data-auth-form data-auth-mode="register" novalidate>
+        <label for="register-name">Votre prénom</label>
+        <input id="register-name" required name="name" minlength="2" maxlength="120" autocomplete="given-name" placeholder="Amel" aria-describedby="register-name-error"><p class="field-error" id="register-name-error" data-field-error="name"></p>
+        <label for="register-email">Email</label>
+        <input id="register-email" required name="email" type="email" maxlength="190" autocomplete="email" placeholder="vous@exemple.tn" aria-describedby="register-email-error"><p class="field-error" id="register-email-error" data-field-error="email"></p>
+        <label for="register-phone">Téléphone</label>
+        <input id="register-phone" required name="phone" inputmode="tel" autocomplete="tel" pattern="(?:\+216\s?)?[234579][0-9]{7}" placeholder="+216 12 345 678" aria-describedby="register-phone-error"><p class="field-error" id="register-phone-error" data-field-error="phone"></p>
+        <label for="register-gender">Genre</label>
+        <select id="register-gender" required name="gender" autocomplete="sex" aria-describedby="register-gender-error"><option value="">Choisir</option><option value="female">Femme</option><option value="male">Homme</option></select><p class="field-error" id="register-gender-error" data-field-error="gender"></p>
+        <label for="register-password">Mot de passe</label>
+        <input id="register-password" required name="password" type="password" minlength="8" maxlength="72" autocomplete="new-password" placeholder="8 caractères minimum" aria-describedby="register-password-error"><p class="field-error" id="register-password-error" data-field-error="password"></p>
+        <label for="register-password-confirm">Confirmer le mot de passe</label>
+        <input id="register-password-confirm" required name="password_confirm" type="password" minlength="8" maxlength="72" autocomplete="new-password" placeholder="Répéter le mot de passe" aria-describedby="register-password-confirm-error"><p class="field-error" id="register-password-confirm-error" data-field-error="password_confirm"></p>
+        <button class="button button--primary button--full" type="submit" data-submit-button>Créer mon compte <span aria-hidden="true">↗</span></button>
+      </form>
+      <p class="auth-switch">Déjà membre ? <a href="login.html">Se connecter</a></p>
+    </div>
+    <div class="auth-art" aria-hidden="true"><div class="auth-art__circle"></div><span>👋</span><p>Bienvenue dans<br><em>la communauté.</em></p></div>
+  </main>
+  <script src="js/api.js"></script><script src="js/auth.js"></script><script src="js/i18n.js"></script><script src="js/main.js"></script>
+</body>
+</html>

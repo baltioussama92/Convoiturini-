@@ -8,10 +8,10 @@ require_csrf($data);
 
 $now = time();
 $attempts = $_SESSION['login_attempts'] ?? ['started' => $now, 'count' => 0];
-if ($now - (int)$attempts['started'] > 900) {
+if ($now - (int)$attempts['started'] > 300) {
     $attempts = ['started' => $now, 'count' => 0];
 }
-if ((int)$attempts['count'] >= 8) {
+if ((int)$attempts['count'] >= 5) {
     respond(['ok' => false, 'error' => 'too_many_login_attempts'], 429);
 }
 
@@ -21,11 +21,20 @@ if ($identifier === '' || $password === '') {
     respond(['ok' => false, 'error' => 'credentials_required'], 422);
 }
 
+$phoneCandidate = valid_phone($identifier) ? normalize_phone($identifier) : '';
 $statement = $pdo->prepare(
     'SELECT id, name, email, phone, password_hash, gender
-     FROM users WHERE email = :identifier OR phone = :identifier LIMIT 1'
+     FROM users
+     WHERE email = :identifier_email
+        OR phone = :identifier_phone
+        OR phone = :phone_candidate
+     LIMIT 1'
 );
-$statement->execute(['identifier' => $identifier]);
+$statement->execute([
+    'identifier_email' => $identifier,
+    'identifier_phone' => $identifier,
+    'phone_candidate' => $phoneCandidate,
+]);
 $user = $statement->fetch();
 
 if (!$user || !password_verify($password, $user['password_hash'])) {

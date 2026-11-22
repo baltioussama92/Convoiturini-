@@ -136,8 +136,19 @@
 
   function simplify(points, count) {
     const target = count || 35;
-    if (points.length <= target) return points;
     const output = [];
+    if (points.length < 2) return points;
+    if (points.length === 2) {
+      for (let index = 0; index < target; index++) {
+        const ratio = index / (target - 1);
+        output.push([
+          points[0][0] + (points[1][0] - points[0][0]) * ratio,
+          points[0][1] + (points[1][1] - points[0][1]) * ratio,
+        ]);
+      }
+      return output;
+    }
+    if (points.length <= target) return points;
     const step = (points.length - 1) / (target - 1);
     for (let index = 0; index < target; index++) output.push(points[Math.round(index * step)]);
     return output;

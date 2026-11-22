@@ -19,9 +19,12 @@ if ($query === '') {
 $statement = $pdo->prepare(
     'SELECT name_fr, name_ar, lat, lng
      FROM cities
-     WHERE name_fr LIKE :query OR name_ar LIKE :query
+     WHERE name_fr LIKE :name_fr OR name_ar LIKE :name_ar
      ORDER BY name_fr
      LIMIT 5'
 );
-$statement->execute(['query' => '%' . $query . '%']);
+$statement->execute([
+    'name_fr' => '%' . $query . '%',
+    'name_ar' => '%' . $query . '%',
+]);
 respond(['ok' => true, 'cities' => $statement->fetchAll(), 'lang' => $lang]);

@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
 
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+
 session_set_cookie_params([
     'httponly' => true,
     'samesite' => 'Lax',
@@ -92,7 +95,18 @@ function string_field(array $data, string $key, int $maxLength = 255): string
 
 function valid_phone(string $phone): bool
 {
-    return (bool)preg_match('/^(?:\+216\s?)?\d{8}$/', $phone);
+    $normalized = trim($phone);
+    $normalized = preg_replace('/^(\+216)\s*/', '216', $normalized) ?? '';
+    $normalized = str_replace(' ', '', $normalized);
+    return (bool)preg_match('/^(?:216)?[234579][0-9]{7}$/', $normalized);
+}
+
+function normalize_phone(string $phone): string
+{
+    $normalized = trim($phone);
+    $normalized = preg_replace('/^(\+216)\s*/', '', $normalized) ?? '';
+    $normalized = preg_replace('/^216/', '', str_replace(' ', '', $normalized)) ?? '';
+    return '+216' . str_replace(' ', '', $normalized);
 }
 
 function valid_date(string $date): bool
@@ -113,6 +127,34 @@ function numeric_field(array $data, string $key, float $min, float $max): float
         respond(['ok' => false, 'error' => 'invalid_' . $key], 422);
     }
 
+    return $value;
+}
+
+function integer_field(array $data, string $key, int $min, int $max): int
+{
+    if (!array_key_exists($key, $data) || filter_var($data[$key], FILTER_VALIDATE_INT) === false) {
+        respond(['ok' => false, 'error' => 'invalid_' . $key], 422);
+    }
+    $value = (int)$data[$key];
+    if ($value < $min || $value > $max) {
+        respond(['ok' => false, 'error' => 'invalid_' . $key], 422);
+    }
+    return $value;
+}
+
+function decimal_field(array $data, string $key, float $min, float $max): float
+{
+    if (!isset($data[$key]) || !is_string($data[$key]) && !is_numeric($data[$key])) {
+        respond(['ok' => false, 'error' => 'invalid_' . $key], 422);
+    }
+    $raw = trim((string)$data[$key]);
+    if (!preg_match('/^\d+(?:\.\d{1,2})?$/', $raw)) {
+        respond(['ok' => false, 'error' => 'invalid_' . $key], 422);
+    }
+    $value = (float)$raw;
+    if ($value < $min || $value > $max) {
+        respond(['ok' => false, 'error' => 'invalid_' . $key], 422);
+    }
     return $value;
 }
 

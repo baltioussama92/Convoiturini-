@@ -6,19 +6,15 @@
   }[char]));
   const render = async () => {
     try {
-      let user, rides;
-      if (window.covoituriniApi) {
-        try { ({ user, rides } = await window.covoituriniApi('profile.php')); } catch {}
+      const me = await window.covoituriniApi('me.php');
+      const mine = await window.covoituriniApi('my_rides.php');
+      if (!me.ok) {
+        location.href = `login.html?return=${encodeURIComponent(location.pathname + location.search)}`;
+        return;
       }
-      if (!user) {
-        const saved = JSON.parse(localStorage.getItem('covoiturini-demo-user') || '{}');
-        user = { name: saved.name || 'Amel Ben Salah', email: saved.email || 'amel@example.tn', phone: saved.phone || '+21620100001' };
-        const published = JSON.parse(localStorage.getItem('covoiturini-rides') || '[]');
-        rides = [
-          { start_name: 'Manouba', end_name: 'Ariana', ride_date: '2026-11-23', ride_time: '08:00:00', seats_left: 2, price: '3.00', status: 'active' },
-          ...published,
-        ];
-      }
+      if (!mine.ok) throw new Error(mine.error);
+      const user = me.data.user;
+      const rides = mine.data.rides || [];
       document.querySelector('[data-profile-name]').textContent = user.name;
       document.querySelector('[data-profile-initial]').textContent = user.name.charAt(0).toUpperCase();
       document.querySelector('[data-profile-meta]').textContent = `${user.email} · ${user.phone}`;
@@ -33,7 +29,8 @@
     }
   };
   document.querySelector('[data-logout]')?.addEventListener('click', async () => {
-    try { await window.covoituriniApi.post('logout.php', {}); } finally { location.href = 'index.html'; }
+    await window.covoituriniApi.post('logout.php', {});
+    location.href = 'index.html';
   });
   root.addEventListener('click', async event => {
     const button = event.target.closest('[data-delete-ride]');
@@ -41,7 +38,8 @@
     if (!window.confirm('Supprimer définitivement ce trajet ?')) return;
     button.disabled = true;
     try {
-      await window.covoituriniApi.post('delete_ride.php', { ride_id: Number(button.dataset.deleteRide) });
+      const deletion = await window.covoituriniApi.post('delete_ride.php', { ride_id: Number(button.dataset.deleteRide) });
+      if (!deletion.ok) throw new Error(deletion.error);
       button.closest('[data-profile-ride]').remove();
     } catch (error) {
       button.disabled = false;

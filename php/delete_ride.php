@@ -11,9 +11,15 @@ if (!$rideId || $rideId < 1) {
     respond(['ok' => false, 'error' => 'invalid_ride_id'], 422);
 }
 
-$statement = $pdo->prepare('DELETE FROM rides WHERE id = :id AND user_id = :user_id');
-$statement->execute(['id' => $rideId, 'user_id' => $userId]);
-if ($statement->rowCount() === 0) {
-    respond(['ok' => false, 'error' => 'ride_not_found_or_not_owner'], 404);
+$ownerStatement = $pdo->prepare('SELECT user_id FROM rides WHERE id = :id LIMIT 1');
+$ownerStatement->execute(['id' => $rideId]);
+$owner = $ownerStatement->fetch();
+if (!$owner) {
+    respond(['ok' => false, 'error' => 'ride_not_found'], 404);
 }
+if ((int)$owner['user_id'] !== $userId) {
+    respond(['ok' => false, 'error' => 'forbidden'], 403);
+}
+$statement = $pdo->prepare('DELETE FROM rides WHERE id = :id');
+$statement->execute(['id' => $rideId]);
 respond(['ok' => true]);

@@ -27,6 +27,24 @@
   });
   const mapElement = document.getElementById('search-map');
   if (mapElement) observer.observe(mapElement);
+  if (mapElement) {
+    let dragStart = null;
+    let startHeight = 0;
+    mapElement.addEventListener('pointerdown', event => {
+      if (matchMedia('(max-width:900px)').matches) {
+        dragStart = event.clientY;
+        startHeight = mapElement.getBoundingClientRect().height;
+        mapElement.setPointerCapture?.(event.pointerId);
+      }
+    });
+    mapElement.addEventListener('pointermove', event => {
+      if (dragStart === null) return;
+      const height = Math.min(innerHeight * .75, Math.max(280, startHeight + dragStart - event.clientY));
+      mapElement.style.height = `${height}px`;
+      searchMap?.invalidateSize();
+    });
+    mapElement.addEventListener('pointerup', () => { dragStart = null; });
+  }
   const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;',
   }[char]));
@@ -83,8 +101,12 @@
     });
     if (drawnLines.length) searchMap.fitBounds(L.featureGroup(drawnLines.map(item => item.line)).getBounds(), { padding: [35, 35] });
   };
-  const showError = () => { list.innerHTML = '<p class="muted">Impossible de charger les trajets. Vérifiez que XAMPP et la base de données sont actifs.</p>'; };
+  const showError = () => {
+    list.innerHTML = '<div class="data-state"><p>Impossible de charger les trajets.</p><button type="button" class="button button--ghost" data-search-retry>Réessayer</button></div>';
+    list.querySelector('[data-search-retry]')?.addEventListener('click', load);
+  };
   const load = async () => {
+    list.innerHTML = '<div class="ride-skeleton"></div><div class="ride-skeleton"></div><div class="ride-skeleton"></div>';
     const from = cityCoordinates(fields.from.value);
     const to = cityCoordinates(fields.to.value);
     initializeMap();
@@ -100,22 +122,26 @@
         searchMarkers.push(L.circle([to.lat, to.lng], { radius: 3000, color: '#e65d50', fillOpacity: 0.08 }).addTo(searchMap));
       }
     }
-    const matchesMock = () => window.mockRides.filter(ride =>
-      (!fields.from.value || ride.start_name.toLowerCase().includes(fields.from.value.toLowerCase())) &&
-      (!fields.to.value || ride.end_name.toLowerCase().includes(fields.to.value.toLowerCase())) &&
-      Number(ride.price) <= Number(fields.price.value || 30) &&
-      Number(ride.seats_left) >= Number(fields.seats.value || 1)
-    );
-    if (!from || !to) { render(matchesMock()); return; }
+    if (!from || !to) {
+      const query = new URLSearchParams({ limit: '100' });
+      if (fields.date.value) query.set('date', fields.date.value);
+      const result = await window.covoituriniApi(`get_rides.php?${query}`);
+      if (result.ok) render(result.data.rides || []);
+      else showError();
+      return;
+    }
     const query = new URLSearchParams({
       from_lat: from.lat, from_lng: from.lng, to_lat: to.lat, to_lng: to.lng,
       seats: fields.seats.value || '1', max_price: fields.price.value || '30',
     });
     if (fields.date.value) query.set('date', fields.date.value);
-    try {
-      if (window.covoituriniApi) render((await window.covoituriniApi(`search_rides.php?${query}`)).rides);
-      else render(matchesMock());
-    } catch { render(matchesMock()); }
+    if (!window.covoituriniApi) {
+      showError();
+      return;
+    }
+    const result = await window.covoituriniApi(`search_rides.php?${query}`);
+    if (result.ok) render(result.data.rides || []);
+    else showError();
   };
   fields.from.value = params.get('from') || '';
   fields.to.value = params.get('to') || '';
@@ -123,5 +149,9 @@
   document.querySelector('[data-run-search]')?.addEventListener('click', load);
   fields.price?.addEventListener('input', event => { document.querySelector('[data-price-output]').textContent = `${event.target.value} TND`; });
   document.querySelector('[data-clear-filters]')?.addEventListener('click', () => { Object.values(fields).forEach(field => { if (field) field.value = field.type === 'range' ? '30' : ''; }); load(); });
-  load();
+  if (window.loadCityCatalog) {
+    window.loadCityCatalog().finally(load);
+  } else {
+    load();
+  }
 })();

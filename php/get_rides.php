@@ -20,7 +20,7 @@ if ($date !== '') {
 $query = 'SELECT r.id, r.title, r.start_name, r.start_lat, r.start_lng,
                  r.end_name, r.end_lat, r.end_lng, r.ride_date, r.ride_time,
                  r.seats_total, r.seats_left, r.price, r.gender_allowed,
-                 r.distance_km, r.duration_min, u.name AS driver_name
+                 r.distance_km, r.duration_min, r.phone, u.name AS driver_name
           FROM rides r JOIN users u ON u.id = r.user_id
           WHERE ' . implode(' AND ', $where) . '
           ORDER BY r.ride_date, r.ride_time, r.price
